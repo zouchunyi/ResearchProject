@@ -348,13 +348,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
-  m_LocalRotation: {x: 0.57739663, y: -0, z: -0, w: 0.8164638}
-  m_LocalPosition: {x: 0, y: 37.06, z: -10}
+  m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 70.535, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
 --- !u!114 &534669906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,10 +367,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 862c9c5257dd141439e93ecbf029c851, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_GrassCopy: {fileID: 1364588959314324, guid: bdb04f0e816e71f4b9189442185d19f7,
+  m_GrassDirectCopy: {fileID: 1364588959314324, guid: f5cd7354c5e2cd546a7d90d6e9ce0daa,
+    type: 3}
+  m_GrassIndirectCopy: {fileID: 1364588959314324, guid: bdb04f0e816e71f4b9189442185d19f7,
     type: 3}
   m_CircleTimes: 100
   m_InstanceNumber: 1023
+  m_CullingComputeShader: {fileID: 7200000, guid: 6b728bedfcb4c91499b8678d3d204dd2,
+    type: 3}
   m_Indirect: 1
 --- !u!1 &795389910
 GameObject:

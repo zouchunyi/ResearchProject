@@ -1,0 +1,18 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+StructuredBuffer<float4> _positionBuffer;
+AppendStructuredBuffer<float4> _drawPositionBuffer;
+float4 _cameraPosition;
+
+[numthreads(512,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	float4 pos = _positionBuffer[id.x];
+	float3 disVector = (_cameraPosition.xyz - pos.xyz);
+	float dis = disVector.x * disVector.x + disVector.y * disVector.y + disVector.z * disVector.z;
+	if (dis < 10)
+	{
+		_drawPositionBuffer.Append(pos);
+	}
+}

@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
-    public GameObject m_GrassCopy = null;
+    public GameObject m_GrassDirectCopy = null;
+    public GameObject m_GrassIndirectCopy = null;
     public int m_CircleTimes = 1;
     public int m_InstanceNumber = 1023;
+    public ComputeShader m_CullingComputeShader = null;
 
     public bool m_Indirect = false;
 
@@ -16,7 +18,11 @@ public class WorldManager : MonoBehaviour
 
     private ComputeBuffer m_ArgsBuffer = null;
     private ComputeBuffer m_PositionBuffer = null;
+    private ComputeBuffer m_DrawPositionBuffer = null;
     private Bounds m_Bounds = new Bounds(Vector3.zero, Vector3.one * 100);
+
+    //GPU culling
+    private int m_CullingKernel = 0;
 
     //
     //index count per instance
@@ -27,10 +33,17 @@ public class WorldManager : MonoBehaviour
     //
     private uint[] m_Args = new uint[5] { 0, 0, 0, 0, 0 };
 
-    // Start is called before the first frame update
     private void Start()
     {
-        GameObject item = GameObject.Instantiate(m_GrassCopy);
+        GameObject item = null;
+        if (m_Indirect)
+        {
+            item = GameObject.Instantiate(m_GrassIndirectCopy);
+        }
+        else
+        {
+            item = GameObject.Instantiate(m_GrassDirectCopy);
+        }
         MeshFilter meshFilter = item.GetComponent<MeshFilter>();
         m_GrassMesh = meshFilter.sharedMesh;
         m_Material = item.GetComponent<MeshRenderer>().sharedMaterial;
@@ -43,7 +56,7 @@ public class WorldManager : MonoBehaviour
             RandomMatrix4x4(out matrix4X4s);
             m_MatricesList.Add(matrix4X4s);
         }
-
+        
         if (m_Indirect)
         {
             m_ArgsBuffer = new ComputeBuffer(5, sizeof(uint), ComputeBufferType.IndirectArguments);
@@ -55,6 +68,7 @@ public class WorldManager : MonoBehaviour
             m_ArgsBuffer.SetData(m_Args);
 
             m_PositionBuffer = new ComputeBuffer(m_CircleTimes * m_InstanceNumber, sizeof(float) * 4);
+            m_DrawPositionBuffer = new ComputeBuffer(m_CircleTimes * m_InstanceNumber, sizeof(float) * 4, ComputeBufferType.Append);
             Vector4[] positions = new Vector4[m_CircleTimes * m_InstanceNumber];
             for (int i = 0; i < m_MatricesList.Count; ++i)
             {
@@ -64,15 +78,17 @@ public class WorldManager : MonoBehaviour
                 }
             }
             m_PositionBuffer.SetData(positions);
-            m_Material.SetBuffer("_positionBuffer", m_PositionBuffer);
+            m_Material.SetBuffer("_positionBuffer", m_DrawPositionBuffer);
+
+            m_CullingKernel = m_CullingComputeShader.FindKernel("CSMain");
         }
     }
 
-    // Update is called once per frame
     private void Update()
     {
         if (m_Indirect)
         {
+            GPUCulling();
             DrawGrassFromIndirect();
         }
         else
@@ -107,5 +123,16 @@ public class WorldManager : MonoBehaviour
     private void DrawGrassFromIndirect()
     {
         Graphics.DrawMeshInstancedIndirect(m_GrassMesh, 0, m_Material, m_Bounds, m_ArgsBuffer);
+    }
+
+    private void GPUCulling()
+    {
+        m_DrawPositionBuffer.SetCounterValue(0);
+        int pitch = m_CircleTimes * m_InstanceNumber / 512;
+        m_CullingComputeShader.SetBuffer(m_CullingKernel, "_positionBuffer", m_PositionBuffer);
+        m_CullingComputeShader.SetBuffer(m_CullingKernel, "_drawPositionBuffer", m_DrawPositionBuffer);
+        m_CullingComputeShader.SetVector("_cameraPosition", new Vector4(transform.position.x, transform.position.y, transform.position.z, 1));
+        m_CullingComputeShader.Dispatch(m_CullingKernel, pitch, 1, 1);
+        ComputeBuffer.CopyCount(m_DrawPositionBuffer, m_ArgsBuffer, 4);
     }
 }
