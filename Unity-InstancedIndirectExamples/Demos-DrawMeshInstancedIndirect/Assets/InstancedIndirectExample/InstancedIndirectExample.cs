@@ -60,7 +60,7 @@ public class InstancedIndirectExample : MonoBehaviour
             float distance = Random.Range(20.0f, 100.0f);
             float height = Random.Range(-2.0f, 2.0f);
             float size = Random.Range(0.05f, 0.25f);
-            positions[i]	= new Vector4(Mathf.Sin(angle) * distance, height, Mathf.Cos(angle) * distance, size);
+            positions[i]	= new Vector4(Mathf.Sin(angle) * distance, height, Mathf.Cos(angle) * distance, 0.1f);
 			colors[i]		= new Vector4( Random.value, Random.value, Random.value, 1f );
         }
 
