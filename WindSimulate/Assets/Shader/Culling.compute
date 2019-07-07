@@ -11,7 +11,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 	float4 pos = _positionBuffer[id.x];
 	float3 disVector = (_cameraPosition.xyz - pos.xyz);
 	float dis = disVector.x * disVector.x + disVector.y * disVector.y + disVector.z * disVector.z;
-	if (dis < 10)
+	if (dis < 50)
 	{
 		_drawPositionBuffer.Append(pos);
 	}

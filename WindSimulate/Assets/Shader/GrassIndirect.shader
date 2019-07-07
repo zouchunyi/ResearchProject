@@ -2,6 +2,9 @@
 {
 	Properties {
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
+		_StaticWind("Static Wind", Vector) = (0,0,0,0)
+		_Radius("Static Wind", float) = 1
+		fBendScale("Static Wind", float) = 1
 	}
 	SubShader {
 
@@ -26,6 +29,9 @@
 			#include "AutoLight.cginc"
 
 			sampler2D _MainTex;
+			float4 _StaticWind;
+			float _Radius;
+			float fBendScale;
 
 		#if SHADER_TARGET >= 45
 			StructuredBuffer<float4> _positionBuffer;
@@ -48,6 +54,8 @@
 			//	v = float2(v.x * c - v.y * s, v.x * s + v.y * c);
 			//}
 
+			//void WindSimulate()
+
 			v2f vert(appdata_full v, uint instanceID : SV_InstanceID)
 			{
 			#if SHADER_TARGET >= 45
@@ -61,6 +69,18 @@
 
 				float3 localPosition = v.vertex.xyz * data.w;
 				float3 worldPosition = data.xyz + localPosition;
+
+				//windsimulate
+				float3 windTiers = normalize(_StaticWind.xyz);
+				//float velocity = 
+				half dis = clamp(v.vertex.y / 2, 0, 1);
+				dis += pow(dis, 1.5);
+				float3 change = dis * windTiers * _Radius;
+				worldPosition.x += change.x / 2;
+				worldPosition.z += change.z / 2;
+				worldPosition.y -= abs(change.x / 2);
+
+
 				float3 worldNormal = v.normal;
 
 				float3 ndotl = saturate(dot(worldNormal, _WorldSpaceLightPos0.xyz));
