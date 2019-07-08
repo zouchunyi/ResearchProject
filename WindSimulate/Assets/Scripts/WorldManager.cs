@@ -18,6 +18,7 @@ public class WorldManager : MonoBehaviour
 
     private ComputeBuffer m_ArgsBuffer = null;
     private ComputeBuffer m_PositionBuffer = null;
+    private ComputeBuffer m_VegetationArgsBuffer = null;
     private ComputeBuffer m_DrawPositionBuffer = null;
     private Bounds m_Bounds = new Bounds(Vector3.zero, Vector3.one * 100);
 
@@ -68,17 +69,23 @@ public class WorldManager : MonoBehaviour
             m_ArgsBuffer.SetData(m_Args);
 
             m_PositionBuffer = new ComputeBuffer(m_CircleTimes * m_InstanceNumber, sizeof(float) * 4);
+            m_VegetationArgsBuffer = new ComputeBuffer(m_CircleTimes * m_InstanceNumber, sizeof(float) * 4);
             m_DrawPositionBuffer = new ComputeBuffer(m_CircleTimes * m_InstanceNumber, sizeof(float) * 4, ComputeBufferType.Append);
             Vector4[] positions = new Vector4[m_CircleTimes * m_InstanceNumber];
+            Vector4[] vegetationArgs = new Vector4[m_CircleTimes * m_InstanceNumber];
             for (int i = 0; i < m_MatricesList.Count; ++i)
             {
                 for (int j = 0; j < m_InstanceNumber; ++j)
                 {
+                    float maxAngle = Random.Range(10f, 80f);
                     positions[i * m_InstanceNumber + j] = new Vector4(m_MatricesList[i][j].m03, m_MatricesList[i][j].m13, m_MatricesList[i][j].m23, 1);
+                    vegetationArgs[i * m_InstanceNumber + j] = new Vector4(maxAngle, 0, 0, 0);
                 }
             }
             m_PositionBuffer.SetData(positions);
-            m_Material.SetBuffer("_positionBuffer", m_DrawPositionBuffer);
+            m_VegetationArgsBuffer.SetData(vegetationArgs);
+            m_Material.SetBuffer("_positionBuffer", m_PositionBuffer);
+            m_Material.SetBuffer("_vegetationArgsBuffer", m_VegetationArgsBuffer);
 
             m_CullingKernel = m_CullingComputeShader.FindKernel("CSMain");
         }
@@ -88,7 +95,7 @@ public class WorldManager : MonoBehaviour
     {
         if (m_Indirect)
         {
-            GPUCulling();
+            //GPUCulling();
             DrawGrassFromIndirect();
         }
         else

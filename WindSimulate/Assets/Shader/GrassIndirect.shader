@@ -2,9 +2,11 @@
 {
 	Properties {
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
-		_StaticWind("Static Wind", Vector) = (0,0,0,0)
-		_Radius("Static Wind", float) = 1
-		fBendScale("Static Wind", float) = 1
+		_GlobalWindDirection("Global Wind Direction", Vector) = (0,0,0,0)
+		_GlobalWindStrength("Global Wind Strength", float) = 1
+
+		_TopPositionY("Top Position", float) = 1
+		_BottomPositionY("Bottom Position", float) = 1
 	}
 	SubShader {
 
@@ -13,8 +15,8 @@
 			Tags {"LightMode" = "ForwardBase" "Queue" = "AlphaTest"}
 			//AlphaTest Greater 0.5
 			
-			//ZTest LEqual
-			//ZWrite On
+			ZTest LEqual
+			ZWrite On
 			//Blend SrcAlpha OneMinusSrcAlpha
 
 			CGPROGRAM
@@ -29,12 +31,14 @@
 			#include "AutoLight.cginc"
 
 			sampler2D _MainTex;
-			float4 _StaticWind;
-			float _Radius;
-			float fBendScale;
+			float4 _GlobalWindDirection;
+			float _GlobalWindStrength;
+
+			float _TopPositionY;
 
 		#if SHADER_TARGET >= 45
 			StructuredBuffer<float4> _positionBuffer;
+			StructuredBuffer<float4> _vegetationArgsBuffer;
 		#endif
 
 			struct v2f
@@ -47,39 +51,42 @@
 				SHADOW_COORDS(4)
 			};
 
-			//void rotate2D(inout float2 v, float r)
-			//{
-			//	float s, c;
-			//	sincos(r, s, c);
-			//	v = float2(v.x * c - v.y * s, v.x * s + v.y * c);
-			//}
-
-			//void WindSimulate()
-
 			v2f vert(appdata_full v, uint instanceID : SV_InstanceID)
 			{
 			#if SHADER_TARGET >= 45
 				float4 data = _positionBuffer[instanceID];
+				float4 args = _vegetationArgsBuffer[instanceID];
 			#else
 				float4 data = float4(0, 0, 0, 1);
+				float4 args = float4(60, 0, 0, 0);
 			#endif
 
-				//float rotation = data.w * data.w * _Time.x * 0.5f;
-				//rotate2D(data.xz, rotation);
-
-				float3 localPosition = v.vertex.xyz * data.w;
+				float3 localPosition = v.vertex.xyz;
 				float3 worldPosition = data.xyz + localPosition;
 
 				//windsimulate
-				float3 windTiers = normalize(_StaticWind.xyz);
-				//float velocity = 
-				half dis = clamp(v.vertex.y / 2, 0, 1);
-				dis += pow(dis, 1.5);
-				float3 change = dis * windTiers * _Radius;
-				worldPosition.x += change.x / 2;
-				worldPosition.z += change.z / 2;
-				worldPosition.y -= abs(change.x / 2);
-
+				float2 globalWindDir = normalize(_GlobalWindDirection.xz);
+				float3 windTiers = float3(globalWindDir.x, 0, globalWindDir.y) * _GlobalWindStrength;
+				
+				float maxAngle = args.x;
+				float stressLevel = clamp((v.vertex.y - 0.2) / _TopPositionY, 0, 1);
+				stressLevel += pow(stressLevel, 2);
+				float3 change = stressLevel * windTiers;
+				float3 newPosition = worldPosition + change;
+				float3 root = data.xyz + float3(v.vertex.x, 0, v.vertex.z);
+				float3 way1 = normalize(worldPosition - root);
+				float3 way2 = normalize(newPosition - root);
+				float cosAngle = dot(way1, way2);
+				float angle = acos(cosAngle);
+				float angleDegrees = degrees(angle);
+				angleDegrees = min(abs(angleDegrees), maxAngle) * (abs(angleDegrees) / angleDegrees);
+				angle = radians(angleDegrees);
+				cosAngle = cos(angle);
+				float sinAngle = sin(angle);
+				float3 V = worldPosition - root;
+				float3 K = cross(way1, way2);
+				float3 Vrot = V * cosAngle + K * dot(K, V) * (1 - cosAngle) + cross(K, V) * sinAngle;
+				worldPosition.xyz = Vrot + root;
 
 				float3 worldNormal = v.normal;
 
@@ -105,7 +112,7 @@
 				float3 lighting = i.diffuse * shadow + i.ambient;
 				fixed4 output = fixed4(albedo.rgb * i.color * lighting, albedo.w);
 				UNITY_APPLY_FOG(i.fogCoord, output);
-				clip(output.a - 0.5);
+				clip(output.a - 0.1);
 				return output;
 			}
 

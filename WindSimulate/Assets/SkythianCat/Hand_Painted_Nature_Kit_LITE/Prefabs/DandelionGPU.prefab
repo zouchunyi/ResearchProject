@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4429234843561282}
   - component: {fileID: 33688910611669928}
   - component: {fileID: 23723036162004832}
+  - component: {fileID: 427950431481381540}
   m_Layer: 0
   m_Name: DandelionGPU
   m_TagString: Untagged
@@ -77,3 +78,15 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &427950431481381540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364588959314324}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c80ed03ab0c33d489e143e88815d213, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
