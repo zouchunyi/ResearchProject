@@ -1,4 +1,6 @@
-﻿Shader "Unlit/GrassIndirect"
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+Shader "Unlit/GrassIndirect"
 {
 	Properties {
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
@@ -34,6 +36,8 @@
 			float4 _GlobalWindDirection;
 			float _GlobalWindStrength;
 
+			uniform float4 _GlobalWind;
+
 			float _TopPositionY;
 
 		#if SHADER_TARGET >= 45
@@ -64,10 +68,11 @@
 				float3 localPosition = v.vertex.xyz;
 				float3 worldPosition = data.xyz + localPosition;
 
-				//windsimulate
-				float2 globalWindDir = normalize(_GlobalWindDirection.xz);
-				float3 windTiers = float3(globalWindDir.x, 0, globalWindDir.y) * _GlobalWindStrength;
+				//Wind Simulate
+				float3 windTiers = _GlobalWind.xyz * _GlobalWind.w;
 				
+				//Main Wind
+
 				float maxAngle = args.x;
 				float stressLevel = clamp((v.vertex.y - 0.2) / _TopPositionY, 0, 1);
 				stressLevel += pow(stressLevel, 2);
@@ -87,6 +92,11 @@
 				float3 K = cross(way1, way2);
 				float3 Vrot = V * cosAngle + K * dot(K, V) * (1 - cosAngle) + cross(K, V) * sinAngle;
 				worldPosition.xyz = Vrot + root;
+
+				//Detail Wind
+				float3 normal = mul(unity_ObjectToWorld, v.normal);
+				worldPosition.xyz += windTiers * 1 * normal;
+
 
 				float3 worldNormal = v.normal;
 

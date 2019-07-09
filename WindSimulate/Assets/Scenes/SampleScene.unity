@@ -140,7 +140,7 @@ Light:
   serializedVersion: 8
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_Range: 10
   m_SpotAngle: 30
   m_CookieSize: 10
@@ -199,7 +199,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &261577220
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -284,6 +284,7 @@ GameObject:
   - component: {fileID: 534669904}
   - component: {fileID: 534669903}
   - component: {fileID: 534669906}
+  - component: {fileID: 534669907}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -371,11 +372,26 @@ MonoBehaviour:
     type: 3}
   m_GrassIndirectCopy: {fileID: 2794646607604563342, guid: 71a3a23bcf8c7654bb080fc71ab23e6b,
     type: 3}
-  m_CircleTimes: 100
+  m_CircleTimes: 10
   m_InstanceNumber: 1023
   m_CullingComputeShader: {fileID: 7200000, guid: 6b728bedfcb4c91499b8678d3d204dd2,
     type: 3}
   m_Indirect: 1
+--- !u!114 &534669907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534669902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b9d645aa835aa64d80292d09bcd53b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_GlobalWindDirection: {x: 1, y: 0, z: 0}
+  m_GlobalWindStrength: 1
+  m_GlobalWindDirectionChangeAngle: 5
 --- !u!1 &795389910
 GameObject:
   m_ObjectHideFlags: 0

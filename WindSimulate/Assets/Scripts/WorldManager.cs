@@ -77,7 +77,7 @@ public class WorldManager : MonoBehaviour
             {
                 for (int j = 0; j < m_InstanceNumber; ++j)
                 {
-                    float maxAngle = Random.Range(10f, 80f);
+                    float maxAngle = Random.Range(50f, 85f);
                     positions[i * m_InstanceNumber + j] = new Vector4(m_MatricesList[i][j].m03, m_MatricesList[i][j].m13, m_MatricesList[i][j].m23, 1);
                     vegetationArgs[i * m_InstanceNumber + j] = new Vector4(maxAngle, 0, 0, 0);
                 }
