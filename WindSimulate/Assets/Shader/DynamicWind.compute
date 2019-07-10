@@ -1,0 +1,10 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+RWTexture3D<float4> _DynamicWindTexture;
+
+[numthreads(32, 1, 32)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	_DynamicWindTexture[id.xyz] = float4(1, 1, 0, 1);
+}

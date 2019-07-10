@@ -8,9 +8,32 @@ public class WindSimulate : MonoBehaviour
     public float m_GlobalWindStrength = 0;
     public float m_GlobalWindDirectionChangeAngle = 25;
 
+    public Texture3D m_DynamicWindTexture = null;
+    public ComputeShader m_DynamicCoumputeShader = null;
+
+    private int m_DynamicWindKernel;
+
     // Start is called before the first frame update
     void Start()
     {
+        m_DynamicWindTexture = new Texture3D(32, 16, 32, TextureFormat.ARGB32, false);
+        Color[] colors = new Color[32 * 16 * 32];
+        for (int x = 0; x < 32; ++x)
+        {
+            for (int y = 0; y < 16; ++y)
+            {
+                for (int z = 0; z < 32; ++z)
+                {
+                    colors[x * 32 * 16 + y * 16 + z] = Color.red;
+                }
+            }
+        }
+        Debug.Log(m_DynamicWindTexture.isReadable);
+        m_DynamicWindTexture.SetPixels(colors);
+        m_DynamicWindTexture.Apply();
+        Shader.SetGlobalTexture("_DynamicWindTexture", m_DynamicWindTexture);
+
+        m_DynamicWindKernel = m_DynamicCoumputeShader.FindKernel("CSMain");
         
     }
 
@@ -23,6 +46,7 @@ public class WindSimulate : MonoBehaviour
     private void FixedUpdate()
     {
         GlobalWindSimulate();
+        ExcuteDynamicWind();
     }
 
     private void GlobalWindSimulate()
@@ -46,5 +70,11 @@ public class WindSimulate : MonoBehaviour
     private float OneToOneFromTime(float speed = 1)
     {
         return Mathf.Sin(Time.fixedTime * speed);
+    }
+
+    private void ExcuteDynamicWind()
+    {
+        m_DynamicCoumputeShader.SetTextureFromGlobal(m_DynamicWindKernel, "_DynamicWindTexture", "_DynamicWindTexture");
+        m_DynamicCoumputeShader.Dispatch(m_DynamicWindKernel, 1, 1, 1);
     }
 }

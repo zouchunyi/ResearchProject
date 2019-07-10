@@ -37,6 +37,7 @@ Shader "Unlit/GrassIndirect"
 			float _GlobalWindStrength;
 
 			uniform float4 _GlobalWind;
+			uniform sampler3D _DynamicWindTexture;
 
 			float _TopPositionY;
 
@@ -94,8 +95,8 @@ Shader "Unlit/GrassIndirect"
 				worldPosition.xyz = Vrot + root;
 
 				//Detail Wind
-				float3 normal = mul(unity_ObjectToWorld, v.normal);
-				worldPosition.xyz += windTiers * 1 * normal;
+				//float3 normal = mul(unity_ObjectToWorld, v.normal);
+				//worldPosition.xyz += windTiers * 1 * normal;
 
 
 				float3 worldNormal = v.normal;
