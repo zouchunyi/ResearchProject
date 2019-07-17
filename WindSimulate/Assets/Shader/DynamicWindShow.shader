@@ -48,7 +48,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
-                fixed4 col = tex3D(_DynamicWindTexture, float3(i.uv,0));
+                fixed4 col = tex3D(_DynamicWindTexture, float3(i.uv.x, 0, i.uv.y));
                 return col;
             }
             ENDCG

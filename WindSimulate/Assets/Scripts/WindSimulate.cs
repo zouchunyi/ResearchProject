@@ -8,29 +8,34 @@ public class WindSimulate : MonoBehaviour
     public float m_GlobalWindStrength = 0;
     public float m_GlobalWindDirectionChangeAngle = 25;
 
-    public Texture3D m_DynamicWindTexture = null;
+    public RenderTexture m_DynamicWindTexture = null;
     public ComputeShader m_DynamicCoumputeShader = null;
+
+    //public Transform m_Target
 
     private int m_DynamicWindKernel;
 
     // Start is called before the first frame update
     void Start()
     {
-        m_DynamicWindTexture = new Texture3D(32, 16, 32, TextureFormat.ARGB32, false);
-        Color[] colors = new Color[32 * 16 * 32];
-        for (int x = 0; x < 32; ++x)
-        {
-            for (int y = 0; y < 16; ++y)
-            {
-                for (int z = 0; z < 32; ++z)
-                {
-                    colors[x * 32 * 16 + y * 16 + z] = Color.red;
-                }
-            }
-        }
-        Debug.Log(m_DynamicWindTexture.isReadable);
-        m_DynamicWindTexture.SetPixels(colors);
-        m_DynamicWindTexture.Apply();
+        m_DynamicWindTexture = new RenderTexture(64, 32, 0, RenderTextureFormat.ARGB32);
+        m_DynamicWindTexture.enableRandomWrite = true;
+        m_DynamicWindTexture.volumeDepth = 64;
+        m_DynamicWindTexture.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
+        m_DynamicWindTexture.Create();
+        //Color[] colors = new Color[32 * 16 * 32];
+        //for (int x = 0; x < 32; ++x)
+        //{
+        //    for (int y = 0; y < 16; ++y)
+        //    {
+        //        for (int z = 0; z < 32; ++z)
+        //        {
+        //            colors[x * 32 * 16 + y * 16 + z] = Color.red;
+        //        }
+        //    }
+        //}
+        //m_DynamicWindTexture.SetPixels(colors);
+        //m_DynamicWindTexture.Apply();
         Shader.SetGlobalTexture("_DynamicWindTexture", m_DynamicWindTexture);
 
         m_DynamicWindKernel = m_DynamicCoumputeShader.FindKernel("CSMain");
@@ -75,6 +80,6 @@ public class WindSimulate : MonoBehaviour
     private void ExcuteDynamicWind()
     {
         m_DynamicCoumputeShader.SetTextureFromGlobal(m_DynamicWindKernel, "_DynamicWindTexture", "_DynamicWindTexture");
-        m_DynamicCoumputeShader.Dispatch(m_DynamicWindKernel, 1, 1, 1);
+        m_DynamicCoumputeShader.Dispatch(m_DynamicWindKernel, 1, 32, 1);
     }
 }

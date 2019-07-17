@@ -1,10 +1,22 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel CSMain
+#pragma kernel PositionAdjust
+#pragma kernel WindFlow
 
 RWTexture3D<float4> _DynamicWindTexture;
+float3 _DeltaPosition;
 
 [numthreads(32, 1, 32)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+void PositionAdjust(uint3 id : SV_DispatchThreadID)
 {
-	_DynamicWindTexture[id.xyz] = float4(1, 1, 0, 1);
+	if (id.z < 0)
+	{
+		_DynamicWindTexture[id.xyz] = float4(1, 1, 0, 1);
+
+	}
+}
+
+[numthreads(32, 1, 32)]
+void WindFlow(uint3 id : SV_DispatchThreadID)
+{
+
 }
