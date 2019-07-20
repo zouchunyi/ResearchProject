@@ -3,6 +3,7 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+		_Index("Index", Range(0,31)) = 0
     }
     SubShader
     {
@@ -34,6 +35,7 @@
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+			float _Index;
 			uniform sampler3D _DynamicWindTexture;
 
             v2f vert (appdata v)
@@ -48,7 +50,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
-                fixed4 col = tex3D(_DynamicWindTexture, float3(i.uv.x, 0, i.uv.y));
+                fixed4 col = tex3D(_DynamicWindTexture, float3(i.uv.x, _Index / 32.0, i.uv.y));
                 return col;
             }
             ENDCG

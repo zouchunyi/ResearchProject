@@ -1,22 +1,131 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel Init
+#pragma kernel Copy
 #pragma kernel PositionAdjust
-#pragma kernel WindFlow
+#pragma kernel ApplyWind
+#pragma kernel DiffuseWind
+
+struct MotorOmni
+{
+	float3 m_Position;
+	float m_Radius;
+	float m_Force;
+};
 
 RWTexture3D<float4> _DynamicWindTexture;
+RWTexture3D<float4> _DynamicWindTextureCopy;
 float3 _DeltaPosition;
 
-[numthreads(32, 1, 32)]
-void PositionAdjust(uint3 id : SV_DispatchThreadID)
-{
-	if (id.z < 0)
-	{
-		_DynamicWindTexture[id.xyz] = float4(1, 1, 0, 1);
+StructuredBuffer<MotorOmni> _MotorOmniBuffer;
 
+void ApplyMotorOmni(in float3 cellPosWS, uniform MotorOmni motorOmni, in out float3 velocityWS)
+{
+	float3 differenceWs = cellPosWS.xyz - motorOmni.m_Position;
+	float distanceSq = length(differenceWs);
+	
+	if (distanceSq < motorOmni.m_Radius)
+	{
+		velocityWS += motorOmni.m_Force * rsqrt(distanceSq) * differenceWs;
 	}
 }
 
 [numthreads(32, 1, 32)]
-void WindFlow(uint3 id : SV_DispatchThreadID)
+void Copy(uint3 id : SV_DispatchThreadID)
 {
+	float3 points[4];
+	points[0] = id.xyz;
+	points[1] = float3(id.x + 32, id.y, id.z + 32);
+	points[2] = float3(id.x + 32, id.y, id.z);
+	points[3] = float3(id.x, id.y, id.z + 32);
+	for (int i = 0; i < 4; ++i)
+	{
+		_DynamicWindTextureCopy[points[i]] = _DynamicWindTexture[points[i]];
+	}
+}
 
+[numthreads(32, 1, 32)]
+void Init(uint3 id : SV_DispatchThreadID)
+{
+	float3 point1 = id.xyz;
+	float3 point2 = float3(id.x + 32, id.y, id.z + 32);
+	float3 point3 = float3(id.x + 32, id.y, id.z);
+	float3 point4 = float3(id.x, id.y, id.z + 32);
+	float r = id.y / 32.0;
+	float g = id.x / 64.0;
+	float b = id.z / 64.0;
+	if (id.y % 2 != 0)
+	{
+		r = (32 - id.y) / 32.0;
+		g = (32 - id.x) / 64.0;
+		b = (32 - id.z) / 64.0;
+	}
+	float4 color = float4(r, g, b, 1);
+	color = float4(0, 0, 0, 0);
+	_DynamicWindTexture[point1] = color;
+	_DynamicWindTexture[point2] = color;
+	_DynamicWindTexture[point3] = color;
+	_DynamicWindTexture[point4] = color;
+}
+
+[numthreads(32, 1, 32)]
+void PositionAdjust(uint3 id : SV_DispatchThreadID)
+{
+	float3 points[4];
+	points[0] = id.xyz;
+	points[1] = float3(id.x + 32, id.y, id.z + 32);
+	points[2] = float3(id.x + 32, id.y, id.z);
+	points[3] = float3(id.x, id.y, id.z + 32);
+	for (int i = 0; i < 4; ++i)
+	{
+		float3 newPosition = points[i] - _DeltaPosition;
+		if (newPosition.x < 0 || newPosition.x > 63 || newPosition.y < 0 || newPosition.y > 63 || newPosition.z < 0 || newPosition.z > 63)
+		{
+			_DynamicWindTexture[points[i]] = float4(0, 0, 0, 0);
+		}
+		else
+		{
+			_DynamicWindTexture[points[i]] = _DynamicWindTextureCopy[newPosition];
+		}
+	}
+}
+
+[numthreads(32, 1, 32)]
+void ApplyWind(uint3 id : SV_DispatchThreadID)
+{
+	float3 points[4];
+	points[0] = id.xyz;
+	points[1] = float3(id.x + 32, id.y, id.z + 32);
+	points[2] = float3(id.x + 32, id.y, id.z);
+	points[3] = float3(id.x, id.y, id.z + 32);
+	for (int i = 0; i < 4; ++i)
+	{
+		float4 p = _DynamicWindTexture[points[i]];
+		float3 result = (p.xyz * 2.0 - 1) * p.w * 10.0;
+		for (int j = 0; j < 1; ++j)
+		{
+			ApplyMotorOmni(points[i], _MotorOmniBuffer[j], result);
+		}
+		p.xyz = (normalize(result.xyz) + 1) / 2;
+		_DynamicWindTexture[points[i]] = float4(p.xyz, length(result.xyz) / 10.0);
+	}
+}
+
+[numthreads(32, 1, 32)]
+void DiffuseWind(uint3 id : SV_DispatchThreadID)
+{
+	float3 points[4];
+	points[0] = id.xyz;
+	points[1] = float3(id.x + 32, id.y, id.z + 32);
+	points[2] = float3(id.x + 32, id.y, id.z);
+	points[3] = float3(id.x, id.y, id.z + 32);
+	for (int i = 0; i < 4; ++i)
+	{
+		float4 p = _DynamicWindTexture[points[i]];
+		p.w -= 1;
+		if (p.w <= 0)
+		{
+			p = float4(0, 0, 0, 0);
+		}
+		_DynamicWindTexture[points[i]] = p;
+	}
 }

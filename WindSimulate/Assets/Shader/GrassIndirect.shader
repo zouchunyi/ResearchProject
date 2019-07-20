@@ -1,5 +1,7 @@
 ﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
 Shader "Unlit/GrassIndirect"
 {
 	Properties {
@@ -35,9 +37,10 @@ Shader "Unlit/GrassIndirect"
 			sampler2D _MainTex;
 			float4 _GlobalWindDirection;
 			float _GlobalWindStrength;
-
+			
 			uniform float4 _GlobalWind;
 			uniform sampler3D _DynamicWindTexture;
+			uniform float4 _PlayerPositon;
 
 			float _TopPositionY;
 
@@ -70,8 +73,24 @@ Shader "Unlit/GrassIndirect"
 				float3 worldPosition = data.xyz + localPosition;
 
 				//Wind Simulate
-				float3 windTiers = _GlobalWind.xyz * _GlobalWind.w;
 				
+				//Global Wind
+				float3 windTiers = _GlobalWind.xyz * _GlobalWind.w;
+
+				//Dynamic Wind
+				float3 dynamicUV;
+				float3 origin = _PlayerPositon.xyz - float3(16, 8, 16);
+				float3 centerWorld = data.xyz;
+				dynamicUV.x = (centerWorld.x - origin.x) / 32.0;
+				dynamicUV.y = (centerWorld.y - origin.y) / 16.0;
+				dynamicUV.z = (centerWorld.z - origin.z) / 32.0;
+				if (dynamicUV.x >= 0 && dynamicUV.x <= 1 && dynamicUV.y >= 0 && dynamicUV.y <= 1 && dynamicUV.z >= 0 && dynamicUV.z <= 1)
+				{
+					float4 tex = tex3Dlod(_DynamicWindTexture, float4(dynamicUV,0));
+					float3 dynamicWind = (tex.xyz * 2 - 1) * tex.w * 10;
+					windTiers += dynamicWind;
+				}
+
 				//Main Wind
 
 				float maxAngle = args.x;
