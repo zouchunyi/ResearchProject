@@ -1,19 +1,21 @@
 using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
+using WindSimulation;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
 {
     [RequireComponent(typeof (ThirdPersonCharacter))]
     public class ThirdPersonUserControl : MonoBehaviour
     {
+        public GameObject m_Bullet = null;
         private ThirdPersonCharacter m_Character; // A reference to the ThirdPersonCharacter on the object
         private Transform m_Cam;                  // A reference to the main camera in the scenes transform
         private Vector3 m_CamForward;             // The current forward direction of the camera
         private Vector3 m_Move;
         private bool m_Jump;                      // the world-relative desired move direction, calculated from the camForward and user input.
 
-        
+        private WindMotorOmni m_WindMotorOmni = null;
         private void Start()
         {
             // get the transform of the main camera
@@ -30,6 +32,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
             // get the third person character ( this should never be null due to require component )
             m_Character = GetComponent<ThirdPersonCharacter>();
+            m_WindMotorOmni = GetComponent<WindMotorOmni>();
         }
 
 
@@ -39,8 +42,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             {
                 m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
             }
+            m_WindMotorOmni.m_Direction = transform.forward;
         }
-
 
         // Fixed update is called in sync with physics
         private void FixedUpdate()
@@ -70,6 +73,15 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             // pass all parameters to the character control script
             m_Character.Move(m_Move, crouch, m_Jump);
             m_Jump = false;
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                GameObject item = GameObject.Instantiate(m_Bullet);
+                item.transform.position = transform.position;
+               
+                Bullet bullet = item.GetComponent<Bullet>();
+                bullet.m_Speed = transform.forward / 2f;
+            }
         }
     }
 }

@@ -25,6 +25,8 @@ public class WorldManager : MonoBehaviour
     //GPU culling
     private int m_CullingKernel = 0;
 
+    public GameObject m_Player = null;
+
     //
     //index count per instance
     //instance count
@@ -89,8 +91,10 @@ public class WorldManager : MonoBehaviour
 
             m_CullingKernel = m_CullingComputeShader.FindKernel("CSMain");
         }
+
     }
 
+    private float m_Countdown = 1f;
     private void Update()
     {
         if (m_Indirect)
@@ -101,6 +105,14 @@ public class WorldManager : MonoBehaviour
         else
         {
             DrawGrassFromDirect();
+        }
+        if (m_Countdown > 0)
+        {
+            m_Countdown -= Time.deltaTime;
+            if (m_Countdown <= 0)
+            {
+                m_Player.SetActive(true);
+            }
         }
     }
 

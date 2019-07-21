@@ -8,15 +8,17 @@
 struct MotorOmni
 {
 	float3 m_Position;
+	float3 m_Direction;
 	float m_Radius;
 	float m_Force;
 };
 
 RWTexture3D<float4> _DynamicWindTexture;
 RWTexture3D<float4> _DynamicWindTextureCopy;
-float3 _DeltaPosition;
+float4 _DeltaPosition;
 
 StructuredBuffer<MotorOmni> _MotorOmniBuffer;
+float _MotorOmniBufferLength;
 
 void ApplyMotorOmni(in float3 cellPosWS, uniform MotorOmni motorOmni, in out float3 velocityWS)
 {
@@ -26,6 +28,21 @@ void ApplyMotorOmni(in float3 cellPosWS, uniform MotorOmni motorOmni, in out flo
 	if (distanceSq < motorOmni.m_Radius)
 	{
 		velocityWS += motorOmni.m_Force * rsqrt(distanceSq) * differenceWs;
+	}
+}
+
+void ApplyMotorOmni2(in float3 cellPosWS, uniform MotorOmni motorOmni, in out float3 velocityWS)
+{
+	float3 differenceWs = cellPosWS.xyz - motorOmni.m_Position;
+	float distanceSq = length(differenceWs);
+
+	if (distanceSq < motorOmni.m_Radius)
+	{
+		float res = dot(normalize(differenceWs), motorOmni.m_Direction);
+		if (res > 0)
+		{
+			velocityWS += motorOmni.m_Force * rsqrt(distanceSq) * differenceWs;
+		}
 	}
 }
 
@@ -77,7 +94,7 @@ void PositionAdjust(uint3 id : SV_DispatchThreadID)
 	points[3] = float3(id.x, id.y, id.z + 32);
 	for (int i = 0; i < 4; ++i)
 	{
-		float3 newPosition = points[i] - _DeltaPosition;
+		float3 newPosition = points[i] + _DeltaPosition.xyz;
 		if (newPosition.x < 0 || newPosition.x > 63 || newPosition.y < 0 || newPosition.y > 63 || newPosition.z < 0 || newPosition.z > 63)
 		{
 			_DynamicWindTexture[points[i]] = float4(0, 0, 0, 0);
@@ -101,9 +118,9 @@ void ApplyWind(uint3 id : SV_DispatchThreadID)
 	{
 		float4 p = _DynamicWindTexture[points[i]];
 		float3 result = (p.xyz * 2.0 - 1) * p.w * 10.0;
-		for (int j = 0; j < 1; ++j)
+		for (int j = 0; j < _MotorOmniBufferLength; ++j)
 		{
-			ApplyMotorOmni(points[i], _MotorOmniBuffer[j], result);
+			ApplyMotorOmni2(points[i], _MotorOmniBuffer[j], result);
 		}
 		p.xyz = (normalize(result.xyz) + 1) / 2;
 		_DynamicWindTexture[points[i]] = float4(p.xyz, length(result.xyz) / 10.0);
@@ -121,7 +138,7 @@ void DiffuseWind(uint3 id : SV_DispatchThreadID)
 	for (int i = 0; i < 4; ++i)
 	{
 		float4 p = _DynamicWindTexture[points[i]];
-		p.w -= 1;
+		p.w -= 0.01;
 		if (p.w <= 0)
 		{
 			p = float4(0, 0, 0, 0);
