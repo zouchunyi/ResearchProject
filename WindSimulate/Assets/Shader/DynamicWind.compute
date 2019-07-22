@@ -46,7 +46,7 @@ void ApplyMotorOmni2(in float3 cellPosWS, uniform MotorOmni motorOmni, in out fl
 	}
 }
 
-[numthreads(32, 1, 32)]
+[numthreads(32, 1, 16)]
 void Copy(uint3 id : SV_DispatchThreadID)
 {
 	float3 points[4];
@@ -60,7 +60,7 @@ void Copy(uint3 id : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(32, 1, 32)]
+[numthreads(32, 1, 16)]
 void Init(uint3 id : SV_DispatchThreadID)
 {
 	float3 point1 = id.xyz;
@@ -77,14 +77,13 @@ void Init(uint3 id : SV_DispatchThreadID)
 		b = (32 - id.z) / 64.0;
 	}
 	float4 color = float4(r, g, b, 1);
-	color = float4(0, 0, 0, 0);
 	_DynamicWindTexture[point1] = color;
 	_DynamicWindTexture[point2] = color;
 	_DynamicWindTexture[point3] = color;
 	_DynamicWindTexture[point4] = color;
 }
 
-[numthreads(32, 1, 32)]
+[numthreads(32, 1, 16)]
 void PositionAdjust(uint3 id : SV_DispatchThreadID)
 {
 	float3 points[4];
@@ -106,7 +105,7 @@ void PositionAdjust(uint3 id : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(32, 1, 32)]
+[numthreads(32, 1, 16)]
 void ApplyWind(uint3 id : SV_DispatchThreadID)
 {
 	float3 points[4];
@@ -127,7 +126,7 @@ void ApplyWind(uint3 id : SV_DispatchThreadID)
 	}
 }
 
-[numthreads(32, 1, 32)]
+[numthreads(32, 1, 16)]
 void DiffuseWind(uint3 id : SV_DispatchThreadID)
 {
 	float3 points[4];

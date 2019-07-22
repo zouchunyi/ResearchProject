@@ -90,7 +90,7 @@ namespace WindSimulation
             //Init
             int initKernel = m_DynamicCoumputeShader.FindKernel("Init");
             m_DynamicCoumputeShader.SetTextureFromGlobal(initKernel, "_DynamicWindTexture", "_DynamicWindTexture");
-            m_DynamicCoumputeShader.Dispatch(initKernel, 1, 32, 1);
+            //m_DynamicCoumputeShader.Dispatch(initKernel, 1, 32, 2);
             m_LastPosition = m_Target.position;
 
             m_DynamicWindPositionAdjustKernel = m_DynamicCoumputeShader.FindKernel("PositionAdjust");
@@ -190,7 +190,7 @@ namespace WindSimulation
                     }
                     CopyTexture();
                     m_DynamicCoumputeShader.SetVector("_DeltaPosition", deltaPosition);
-                    m_DynamicCoumputeShader.Dispatch(m_DynamicWindPositionAdjustKernel, 1, 32, 1);
+                    m_DynamicCoumputeShader.Dispatch(m_DynamicWindPositionAdjustKernel, 1, 32, 2);
                 }
             }
         }
@@ -222,7 +222,7 @@ namespace WindSimulation
                 buffer.SetData(m_MotorOmniList);
                 m_DynamicCoumputeShader.SetBuffer(m_DynamicWindApplyWind, "_MotorOmniBuffer", buffer);
                 m_DynamicCoumputeShader.SetFloat("_MotorOmniBufferLength", m_MotorOmniList.Count);
-                m_DynamicCoumputeShader.Dispatch(m_DynamicWindApplyWind, 1, 32, 1);
+                m_DynamicCoumputeShader.Dispatch(m_DynamicWindApplyWind, 1, 32, 2);
                 buffer.Release();
             }
 
@@ -230,12 +230,12 @@ namespace WindSimulation
 
         private void DiffuseWind()
         {
-            m_DynamicCoumputeShader.Dispatch(m_DynamicDiffuseWindKernel, 1, 32, 1);
+            m_DynamicCoumputeShader.Dispatch(m_DynamicDiffuseWindKernel, 1, 32, 2);
         }
 
         private void CopyTexture()
         {
-            m_DynamicCoumputeShader.Dispatch(m_DynamicWindCopyKernel, 1, 32, 1);
+            m_DynamicCoumputeShader.Dispatch(m_DynamicWindCopyKernel, 1, 32, 2);
         }
     }
 }

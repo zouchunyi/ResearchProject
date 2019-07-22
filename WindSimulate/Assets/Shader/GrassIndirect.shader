@@ -28,7 +28,7 @@ Shader "Unlit/GrassIndirect"
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap novertexlight
-			#pragma target 4.5
+			//#pragma target 4.5
 
 			#include "UnityCG.cginc"
 			#include "UnityLightingCommon.cginc"
@@ -44,10 +44,10 @@ Shader "Unlit/GrassIndirect"
 
 			float _TopPositionY;
 
-		#if SHADER_TARGET >= 45
+		//#if SHADER_TARGET >= 45
 			StructuredBuffer<float4> _positionBuffer;
 			StructuredBuffer<float4> _vegetationArgsBuffer;
-		#endif
+		//#endif
 
 			struct v2f
 			{
@@ -61,13 +61,13 @@ Shader "Unlit/GrassIndirect"
 
 			v2f vert(appdata_full v, uint instanceID : SV_InstanceID)
 			{
-			#if SHADER_TARGET >= 45
+			//#if SHADER_TARGET >= 45
 				float4 data = _positionBuffer[instanceID];
 				float4 args = _vegetationArgsBuffer[instanceID];
-			#else
-				float4 data = float4(0, 0, 0, 1);
-				float4 args = float4(60, 0, 0, 0);
-			#endif
+			//#else
+			//	float4 data = float4(0, 0, 0, 1);
+			//	float4 args = float4(60, 0, 0, 0);
+			//#endif
 
 				float3 localPosition = v.vertex.xyz;
 				float3 worldPosition = data.xyz + localPosition;
