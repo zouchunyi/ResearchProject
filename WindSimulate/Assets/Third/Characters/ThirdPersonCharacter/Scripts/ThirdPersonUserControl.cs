@@ -45,12 +45,56 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             m_WindMotorOmni.m_Direction = transform.forward;
         }
 
+        private float m_MobileHorizontal = 0;
+        private float m_MobileVertical = 0;
+        private void OnGUI()
+        {
+#if !UNITY_EDITOR
+            if (GUI.Button(new Rect(0, Screen.height - 100, 100, 50), "Left"))
+            {
+                m_MobileHorizontal = -1;
+            }
+            else if (GUI.Button(new Rect(200, Screen.height - 100, 100, 50), "Right"))
+            {
+                m_MobileHorizontal = 1;
+            }
+            else if (GUI.Button(new Rect(100, Screen.height - 150, 100, 50), "Up"))
+            {
+                m_MobileVertical = 1;
+            }
+            else if (GUI.Button(new Rect(100, Screen.height - 50, 100, 50), "Down"))
+            {
+                m_MobileVertical = -1;
+            }
+            else if (GUI.Button(new Rect(Screen.width - 100, Screen.height - 150, 100, 50), "Shoot"))
+            {
+                GameObject item = GameObject.Instantiate(m_Bullet);
+                item.transform.position = transform.position;
+
+                Bullet bullet = item.GetComponent<Bullet>();
+                bullet.m_Speed = transform.forward / 2f;
+            }
+            else if (GUI.Button(new Rect(Screen.width - 100, Screen.height - 50, 100, 50), "Stop"))
+            {
+                m_MobileVertical = 0;
+                m_MobileHorizontal = 0;
+            }
+#endif
+        }
+
+
+
         // Fixed update is called in sync with physics
         private void FixedUpdate()
         {
             // read inputs
+#if UNITY_EDITOR
             float h = CrossPlatformInputManager.GetAxis("Horizontal");
             float v = CrossPlatformInputManager.GetAxis("Vertical");
+#else
+            float h = m_MobileHorizontal;
+            float v = m_MobileVertical;
+#endif
             bool crouch = Input.GetKey(KeyCode.C);
 
             // calculate move direction to pass to character

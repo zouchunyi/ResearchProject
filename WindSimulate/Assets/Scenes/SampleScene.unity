@@ -244,8 +244,18 @@ PrefabInstance:
       propertyPath: m_MoveSpeed
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 49a0e923d39ec3c4c8bb97699e2f2903, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49a0e923d39ec3c4c8bb97699e2f2903, type: 3}
+--- !u!20 &212222467 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 2000000, guid: 49a0e923d39ec3c4c8bb97699e2f2903,
+    type: 3}
+  m_PrefabInstance: {fileID: 182332427}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &261577219
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,6 +267,7 @@ GameObject:
   - component: {fileID: 261577223}
   - component: {fileID: 261577222}
   - component: {fileID: 261577221}
+  - component: {fileID: 261577220}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -264,6 +275,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &261577220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261577219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abfe20bb88583584fbca80b34114dda4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Camera: {fileID: 212222467}
 --- !u!23 &261577221
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -317,8 +341,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 261577219}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.52, y: 1.74, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 0}
   m_Children: []
   m_Father: {fileID: 487735983}
   m_RootOrder: 1
@@ -340,6 +364,7 @@ GameObject:
   - component: {fileID: 534669905}
   - component: {fileID: 534669906}
   - component: {fileID: 534669903}
+  - component: {fileID: 534669904}
   m_Layer: 0
   m_Name: Main
   m_TagString: MainCamera
@@ -367,6 +392,19 @@ MonoBehaviour:
   m_DynamicCoumputeShader: {fileID: 7200000, guid: 96a579cb7ac9ca34eb7442145a542f1c,
     type: 3}
   m_Target: {fileID: 1802310787}
+--- !u!114 &534669904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534669902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f974db168237e164aa7f00ed4450aecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UpdateInterval: 0.5
 --- !u!4 &534669905
 Transform:
   m_ObjectHideFlags: 0
