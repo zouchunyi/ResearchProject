@@ -73,17 +73,19 @@ namespace WindSimulation
         // Start is called before the first frame update
         void Start()
         {
-            m_DynamicWindTexture = new RenderTexture(64, 32, 0, RenderTextureFormat.ARGB32);
+            m_DynamicWindTexture = new RenderTexture(64, 32, 0, RenderTextureFormat.ARGB64);
             m_DynamicWindTexture.enableRandomWrite = true;
             m_DynamicWindTexture.volumeDepth = 64;
             m_DynamicWindTexture.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
+            m_DynamicWindTexture.filterMode = FilterMode.Point;
             m_DynamicWindTexture.Create();
             Shader.SetGlobalTexture("_DynamicWindTexture", m_DynamicWindTexture);
 
-            m_DynamicWindTextureCopy = new RenderTexture(64, 32, 0, RenderTextureFormat.ARGB32);
+            m_DynamicWindTextureCopy = new RenderTexture(64, 32, 0, RenderTextureFormat.ARGB64);
             m_DynamicWindTextureCopy.enableRandomWrite = true;
             m_DynamicWindTextureCopy.volumeDepth = 64;
             m_DynamicWindTextureCopy.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
+            m_DynamicWindTexture.filterMode = FilterMode.Point;
             m_DynamicWindTextureCopy.Create();
             Shader.SetGlobalTexture("_DynamicWindTextureCopy", m_DynamicWindTextureCopy);
 
@@ -154,17 +156,12 @@ namespace WindSimulation
 
         private void ExcuteDynamicWind()
         {
-            //Stopwatch stopwatch = new Stopwatch();
-            //stopwatch.Start();
             AdjustPosition();
             DiffuseWind();
             ApplyWind();
-           // stopwatch.Stop();
-            //UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds);
         }
 
         private Vector3 m_LastPosition = Vector3.zero;
-        private bool m_JustOnce = false;
         private void AdjustPosition()
         {
             if (!m_Target.position.Equals(m_LastPosition))
