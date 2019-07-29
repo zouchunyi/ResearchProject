@@ -7,11 +7,11 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Grass06
-  m_Shader: {fileID: 10600, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: _WINDQUALITY_NONE
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_Name: Grass3_m 1
+  m_Shader: {fileID: 4800000, guid: 5c4e909aabbd1c2458c25dd9cfb84d7c, type: 3}
+  m_ShaderKeywords: GEOM_TYPE_LEAF _ALPHATEST_ON _NORMALMAP
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -19,8 +19,12 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _AdditionalwindGradient:
+        m_Texture: {fileID: 2800000, guid: 1f7362fbb541a3949b1f7ead8f37e973, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 9fbb0a969275bcb4fbd7a287b88d043f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -39,24 +43,24 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Diffuse:
+        m_Texture: {fileID: 2800000, guid: 789e447dea0735746b5ef2414dacb650, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _ExtraTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _GlossMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 5509726e990d53e49a4e833f8b47c017, type: 3}
+        m_Texture: {fileID: 2800000, guid: 789e447dea0735746b5ef2414dacb650, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 2800000, guid: 9fbb0a969275bcb4fbd7a287b88d043f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -67,51 +71,44 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SubsurfaceTex:
-        m_Texture: {fileID: 0}
+    - _WindMask:
+        m_Texture: {fileID: 2800000, guid: 36cb66ed03b74874bb8932a13c736d6c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BillboardKwToggle: 0
-    - _BillboardShadowFade: 0.5
-    - _BottomPositionY: 1
+    - _AO: 0
+    - _Additionalwindstr: 0.4
+    - _AlphaCutoff: 1
+    - _BaseLight: 0.6
     - _BumpScale: 1
-    - _Cull: 2
-    - _Cutoff: 0.5
+    - _Cull: 0
+    - _Cutoff: 0.4
+    - _Desaturation: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _GlobalWindStrength: 0.86
-    - _GlossMapScale: 1
+    - _Gloss: 0.4
     - _Glossiness: 0.5
-    - _GlossyReflections: 1
-    - _HueVariationKwToggle: 0
+    - _MainWindStr: 1
     - _Metallic: 0
-    - _Mode: 0
-    - _NormalMapKwToggle: 0
+    - _Mode: 1
+    - _Occlusion: 1.19
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Radius: 56.62
-    - _Shininess: 0.078125
-    - _SmoothnessTextureChannel: 0
-    - _SpecularHighlights: 1
+    - _Shininess: 0.1
+    - _Specular: 1
     - _SquashAmount: 1
     - _SrcBlend: 1
-    - _SubsurfaceIndirect: 0.25
-    - _SubsurfaceKwToggle: 0
-    - _TopPositionY: 3
-    - _TwoSided: 2
     - _UVSec: 0
     - _WindQuality: 0
     - _ZWrite: 1
-    - fBendScale: -3.85
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.9811359, g: 1, b: 0.9558824, a: 1}
+    - _Diffusecolor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GlobalWindDirection: {r: 1, g: 0, b: 1, a: 0}
     - _HueVariation: {r: 1, g: 0.5, b: 0, a: 0.1}
-    - _HueVariationColor: {r: 1, g: 0.5, b: 0, a: 0.1}
-    - _SpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    - _StaticWind: {r: 1, g: 0, b: 0, a: -42.85}
-    - _SubsurfaceColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LightWrap: {r: 0.4705882, g: 0.4705882, b: 0.4705882, a: 1}
+    - _MainWindvector: {r: 2.58, g: -18.55, b: 6.8, a: 0}
+    - _SpecColor: {r: 0, g: 0, b: 0, a: 0}
+    - _Transmission: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _TreeInstanceColor: {r: 1, g: 1, b: 1, a: 1}
     - _TreeInstanceScale: {r: 1, g: 1, b: 1, a: 1}
