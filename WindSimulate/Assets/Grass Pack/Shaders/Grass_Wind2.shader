@@ -92,7 +92,7 @@ Shader "Custom/Grass_Wind2" {
                 float4 _AdditionalwindGradient_var = tex2Dlod(_AdditionalwindGradient,float4(TRANSFORM_TEX(node_7737, _AdditionalwindGradient),0.0,0));
                 float4 node_1380 = _Time + _TimeEditor;
                 float4 _WindMask_var = tex2Dlod(_WindMask,float4(TRANSFORM_TEX(o.uv2, _WindMask),0.0,0));
-				float3 t1 = (_AdditionalwindGradient_var.rgb*_Additionalwindstr) *v.normal;
+				float3 t1 = (_AdditionalwindGradient_var.rgb*_Additionalwindstr) * v.normal;
 				float t2 = sin((3.141592654 + node_1380.g))*_MainWindStr * 0;
                 
 
