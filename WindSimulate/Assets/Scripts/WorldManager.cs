@@ -38,6 +38,7 @@ public class WorldManager : MonoBehaviour
 
     private void Start()
     {
+        Application.targetFrameRate = 60;
         GameObject item = null;
         if (m_Indirect)
         {

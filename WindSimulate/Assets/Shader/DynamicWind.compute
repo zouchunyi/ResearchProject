@@ -77,6 +77,7 @@ void Init(uint3 id : SV_DispatchThreadID)
 		b = (32 - id.z) / 64.0;
 	}
 	float4 color = float4(r, g, b, 1);
+    color = float4(0,0,0,0);
 	_DynamicWindTexture[point1] = color;
 	_DynamicWindTexture[point2] = color;
 	_DynamicWindTexture[point3] = color;
@@ -116,12 +117,12 @@ void ApplyWind(uint3 id : SV_DispatchThreadID)
 	for (int i = 0; i < 4; ++i)
 	{
 		float4 p = _DynamicWindTexture[points[i]];
-		float3 result = (p.xyz * 2.0 - 1) * p.w * 10.0;
+		float3 result = (p.xyz * 2.0 - 1)* p.w * 10.0;
 		for (int j = 0; j < _MotorOmniBufferLength; ++j)
 		{
 			ApplyMotorOmni2(points[i], _MotorOmniBuffer[j], result);
 		}
-		p.xyz = (normalize(result.xyz) + 1) / 2;
+		p.xyz = (normalize(result.xyz) + 1) / 2.0;
 		_DynamicWindTexture[points[i]] = float4(p.xyz, length(result.xyz) / 10.0);
 	}
 }
@@ -137,11 +138,11 @@ void DiffuseWind(uint3 id : SV_DispatchThreadID)
 	for (int i = 0; i < 4; ++i)
 	{
 		float4 p = _DynamicWindTexture[points[i]];
-		p.w -= 0.01;
+		p.w = p.w - 0.05;
 		if (p.w <= 0)
 		{
 			p = float4(0, 0, 0, 0);
 		}
-		_DynamicWindTexture[points[i]] = p;
+        _DynamicWindTexture[points[i]] = p;
 	}
 }
