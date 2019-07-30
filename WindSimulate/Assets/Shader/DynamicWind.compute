@@ -138,8 +138,8 @@ void DiffuseWind(uint3 id : SV_DispatchThreadID)
 	for (int i = 0; i < 4; ++i)
 	{
 		float4 p = _DynamicWindTexture[points[i]];
-		p.w = p.w - 0.05;
-		if (p.w <= 0)
+		p.w = p.w * 0.95;
+		if (p.w <= 0.01)
 		{
 			p = float4(0, 0, 0, 0);
 		}

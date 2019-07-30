@@ -120,13 +120,6 @@ namespace WindSimulation
 
         private void FixedUpdate()
         {
-            Vector4 postion = new Vector4();
-            postion.x = m_Target.position.x;
-            postion.y = m_Target.position.y;
-            postion.z = m_Target.position.z;
-
-            Shader.SetGlobalVector("_PlayerPositon", postion);
-
             GlobalWindSimulate();
             ExcuteDynamicWind();
         }
@@ -188,6 +181,13 @@ namespace WindSimulation
                     CopyTexture();
                     m_DynamicCoumputeShader.SetVector("_DeltaPosition", deltaPosition);
                     m_DynamicCoumputeShader.Dispatch(m_DynamicWindPositionAdjustKernel, 1, 32, 2);
+
+                    Vector4 postion = new Vector4();
+                    postion.x = m_LastPosition.x;
+                    postion.y = m_LastPosition.y;
+                    postion.z = m_LastPosition.z;
+
+                    Shader.SetGlobalVector("_PlayerPositon", postion);
                 }
             }
         }

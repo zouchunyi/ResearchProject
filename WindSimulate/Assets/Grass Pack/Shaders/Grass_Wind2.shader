@@ -18,12 +18,14 @@ Shader "Custom/Grass_Wind2" {
         _LightWrap ("Light Wrap", Color) = (0.7270221,0.8308824,0.7499826,1)
         _Transmission ("Transmission", Color) = (0.5,0.5,0.5,1)
         _Normal ("Normal", 2D) = "bump" {}
-        _WindMask ("WindMask", 2D) = "bump" {}
         _MainWindStr ("Main Wind Str", Float ) = 0.3
         _Additionalwindstr ("Additional wind str", Float ) = 0.01
-        _AdditionalwindGradient ("Additional wind Gradient", 2D) = "white" {}
+        
         _MainWindvector ("Main Wind vector", Vector) = (0,0,0,0)
         _Gloss ("Gloss", Float ) = 0
+
+		_DetailWindGradient("Detail Wind Gradient", 2D) = "white" {}
+
         [HideInInspector]_Cutoff ("Alpha cutoff", Range(0,1)) = 0.5
     }
     SubShader {
@@ -56,11 +58,13 @@ Shader "Custom/Grass_Wind2" {
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform sampler2D _Normal; uniform float4 _Normal_ST;
             uniform float _Specular;
-            uniform sampler2D _WindMask; uniform float4 _WindMask_ST;
             uniform float _MainWindStr;
             uniform float4 _LightWrap;
             uniform float _Additionalwindstr;
-            uniform sampler2D _AdditionalwindGradient; uniform float4 _AdditionalwindGradient_ST;
+
+            uniform sampler2D _DetailWindGradient; 
+			uniform float4 _DetailWindGradient_ST;
+
             uniform float4 _MainWindvector;
             uniform float _Desaturation;
             uniform float _AlphaCutoff;
@@ -82,49 +86,55 @@ Shader "Custom/Grass_Wind2" {
                 LIGHTING_COORDS(4,5)
                 UNITY_FOG_COORDS(6)
             };
+
+			void RotateMesh(in out float3 worldVertex, in float maxAngle, in float3 rootVertex, in float3 fromDir, in float3 toDir)
+			{
+				float cosAngle = dot(fromDir, toDir);
+				float angle = acos(cosAngle);
+				float angleDegrees = degrees(angle);
+				angleDegrees = min(abs(angleDegrees), maxAngle) * (abs(angleDegrees) / angleDegrees);
+				angle = radians(angleDegrees);
+				cosAngle = cos(angle);
+				float sinAngle = sin(angle);
+				float3 V = worldVertex - rootVertex;
+				float3 K = cross(fromDir, toDir);
+				float3 Vrot = V * cosAngle + K * dot(K, V) * (1 - cosAngle) + cross(K, V) * sinAngle;
+				worldVertex = Vrot + rootVertex;
+			}
+
+			void WindSimulate(in out float4 finalVertex, in float stressLevel, in float3 windDir, in float3 vertex, in float3 normal, in float2 uv)
+			{
+				float3 worldPosition = mul(unity_ObjectToWorld, vertex);
+				float3 changePosition = stressLevel * windDir;
+				float3 newPosition = worldPosition + changePosition;
+				float3 rootVertex = mul(unity_ObjectToWorld, float3(0, 0, 0));
+				rootVertex = rootVertex + float3(vertex.x, 0, vertex.z);
+				float3 fromDir = normalize(worldPosition - rootVertex);
+				float3 toDir = normalize(newPosition - rootVertex);
+
+				//旋转
+				RotateMesh(worldPosition, 50, rootVertex, fromDir, toDir);
+
+				//计算局部扰动效果
+				float4 time = _Time + _TimeEditor;
+				float2 detailUV = (uv + time.g * float2(1, 0));
+				float4 detailWind = tex2Dlod(_DetailWindGradient, float4(TRANSFORM_TEX(detailUV, _DetailWindGradient), 0.0, 0));
+				float3 finalDetailWind = (detailWind.rgb * _Additionalwindstr) * normal * stressLevel;
+				worldPosition.xyz += mul(unity_ObjectToWorld, finalDetailWind);
+
+				finalVertex = mul(UNITY_MATRIX_VP, float4(worldPosition, 1));
+			}
+
             VertexOutput vert (VertexInput v) {
                 VertexOutput o = (VertexOutput)0;
                 o.uv0 = v.texcoord0;
                 o.uv2 = v.texcoord2;
                 o.normalDir = UnityObjectToWorldNormal(v.normal);
-                float4 node_5494 = _Time + _TimeEditor;
-                float2 node_7737 = (o.uv0+node_5494.g*float2(2,0));
-                float4 _AdditionalwindGradient_var = tex2Dlod(_AdditionalwindGradient,float4(TRANSFORM_TEX(node_7737, _AdditionalwindGradient),0.0,0));
-                float4 node_1380 = _Time + _TimeEditor;
-                float4 _WindMask_var = tex2Dlod(_WindMask,float4(TRANSFORM_TEX(o.uv2, _WindMask),0.0,0));
-				float3 t1 = (_AdditionalwindGradient_var.rgb*_Additionalwindstr) * v.normal;
-				float t2 = sin((3.141592654 + node_1380.g))*_MainWindStr * 0;
-                
 
-				float3 worldPosition = mul(unity_ObjectToWorld, v.vertex);
-
-				float stressLevel = _WindMask_var.r;
-				float3 change = stressLevel * _MainWindvector.rgb;
-				float3 newPosition = worldPosition + change;
-				float3 data = mul(unity_ObjectToWorld, float3(0, 0, 0));
-				float3 root = data.xyz + float3(v.vertex.x, 0, v.vertex.z);
-				float3 way1 = normalize(worldPosition - root);
-				float3 way2 = normalize(newPosition - root);
-				float cosAngle = dot(way1, way2);
-				float angle = acos(cosAngle);
-				float angleDegrees = degrees(angle);
-				angleDegrees = min(abs(angleDegrees), 50) * (abs(angleDegrees) / angleDegrees);
-				angle = radians(angleDegrees);
-				cosAngle = cos(angle);
-				float sinAngle = sin(angle);
-				float3 V = worldPosition - root;
-				float3 K = cross(way1, way2);
-				float3 Vrot = V * cosAngle + K * dot(K, V) * (1 - cosAngle) + cross(K, V) * sinAngle;
-				worldPosition.xyz = Vrot + root;
-				//o.pos = mul(UNITY_MATRIX_P, worldPosition);
-
-				//v.vertex.xyz += t1 * stressLevel;// (((t1)+((t2)*_MainWindvector.rgb))*_WindMask_var.rgb*1.0);
-				worldPosition.xyz += mul(unity_ObjectToWorld, t1 * stressLevel);
-                //o.posWorld = mul(unity_ObjectToWorld, v.vertex);
-                //float3 lightColor = _LightColor0.rgb;
-				o.pos = mul(UNITY_MATRIX_VP, float4(worldPosition, 1));// UnityObjectToClipPos(v.vertex);
-                //UNITY_TRANSFER_FOG(o,o.pos);
-                //TRANSFER_VERTEX_TO_FRAGMENT(o)
+				//计算主体风影响
+				float stressLevel = clamp((v.vertex.y) / 2.112099, 0, 1);
+				float3 windDir = _MainWindvector.rgb;
+				WindSimulate(o.pos, stressLevel, windDir, v.vertex.xyz, v.normal, v.texcoord0);
                 return o;
             }
             float4 frag(VertexOutput i, float facing : VFACE) : COLOR {

@@ -246,7 +246,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 49a0e923d39ec3c4c8bb97699e2f2903, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49a0e923d39ec3c4c8bb97699e2f2903, type: 3}
@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_GlobalWindDirection: {x: 1, y: 0, z: 1}
-  m_GlobalWindStrength: 2
+  m_GlobalWindStrength: 0.5
   m_GlobalWindDirectionChangeAngle: 25
   m_DynamicWindTexture: {fileID: 0}
   m_DynamicWindTextureCopy: {fileID: 0}
@@ -433,10 +433,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GrassDirectCopy: {fileID: 1364588959314324, guid: f5cd7354c5e2cd546a7d90d6e9ce0daa,
     type: 3}
-  m_GrassIndirectCopy: {fileID: 5132235219254030523, guid: 6fd9383f0caa8b746afc17c4981d0e7b,
+  m_GrassIndirectCopy: {fileID: 1143393901917919166, guid: 40dc4b277c36587408507fa3760f3091,
     type: 3}
-  m_CircleTimes: 2
-  m_InstanceNumber: 1023
+  m_CircleTimes: 20
+  m_InstanceNumber: 1024
   m_CullingComputeShader: {fileID: 7200000, guid: 6b728bedfcb4c91499b8678d3d204dd2,
     type: 3}
   m_Indirect: 1
