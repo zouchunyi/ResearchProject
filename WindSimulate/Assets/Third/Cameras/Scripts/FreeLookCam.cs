@@ -42,14 +42,16 @@ namespace UnityStandardAssets.Cameras
 
 	        m_PivotTargetRot = m_Pivot.transform.localRotation;
 			m_TransformTargetRot = transform.localRotation;
+        }
 
+        private void Start()
+        {
             JoystickPanel.Instance.SetCameraAction((x, y) =>
             {
                 m_MoveX = x;
                 m_MoveY = y;
             }, 0);
         }
-
 
         protected void Update()
         {
