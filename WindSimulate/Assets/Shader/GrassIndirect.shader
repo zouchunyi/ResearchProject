@@ -45,10 +45,8 @@ Shader "Unlit/GrassIndirect"
 
 			float _TopPositionY;
 
-		//#if SHADER_TARGET >= 45
 			StructuredBuffer<float4> _positionBuffer;
 			StructuredBuffer<float4> _vegetationArgsBuffer;
-		//#endif
 
 			struct v2f
 			{
