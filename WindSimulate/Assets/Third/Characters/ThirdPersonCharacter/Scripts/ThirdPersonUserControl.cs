@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using WindSimulation;
+using CoreFramework;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
 {
@@ -16,6 +17,10 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         private bool m_Jump;                      // the world-relative desired move direction, calculated from the camForward and user input.
 
         private WindMotorOmni m_WindMotorOmni = null;
+
+        private float m_MobileHorizontal = 0;
+        private float m_MobileVertical = 0;
+
         private void Start()
         {
             // get the transform of the main camera
@@ -33,6 +38,17 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             // get the third person character ( this should never be null due to require component )
             m_Character = GetComponent<ThirdPersonCharacter>();
             m_WindMotorOmni = GetComponent<WindMotorOmni>();
+
+            JoystickPanel.Instance.SetPositionAction((x, y) =>
+            {
+                m_MobileHorizontal = x;
+                m_MobileVertical = y;
+            }, 0);
+
+            JoystickPanel.Instance.SetAttackAction(() =>
+            {
+                Attack();
+            });
         }
 
 
@@ -45,50 +61,11 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             m_WindMotorOmni.m_Direction = transform.forward;
         }
 
-        private float m_MobileHorizontal = 0;
-        private float m_MobileVertical = 0;
-        private void OnGUI()
-        {
-#if !UNITY_EDITOR
-            if (GUI.Button(new Rect(0, Screen.height - 100, 100, 50), "Left"))
-            {
-                m_MobileHorizontal = -1;
-            }
-            else if (GUI.Button(new Rect(200, Screen.height - 100, 100, 50), "Right"))
-            {
-                m_MobileHorizontal = 1;
-            }
-            else if (GUI.Button(new Rect(100, Screen.height - 150, 100, 50), "Up"))
-            {
-                m_MobileVertical = 1;
-            }
-            else if (GUI.Button(new Rect(100, Screen.height - 50, 100, 50), "Down"))
-            {
-                m_MobileVertical = -1;
-            }
-            else if (GUI.Button(new Rect(Screen.width - 100, Screen.height - 150, 100, 50), "Shoot"))
-            {
-                GameObject item = GameObject.Instantiate(m_Bullet);
-                item.transform.position = transform.position;
-
-                Bullet bullet = item.GetComponent<Bullet>();
-                bullet.m_Speed = transform.forward / 2f;
-            }
-            else if (GUI.Button(new Rect(Screen.width - 100, Screen.height - 50, 100, 50), "Stop"))
-            {
-                m_MobileVertical = 0;
-                m_MobileHorizontal = 0;
-            }
-#endif
-        }
-
-
-
         // Fixed update is called in sync with physics
         private void FixedUpdate()
         {
             // read inputs
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ZCY
             float h = CrossPlatformInputManager.GetAxis("Horizontal");
             float v = CrossPlatformInputManager.GetAxis("Vertical");
 #else
@@ -120,12 +97,17 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
             if (Input.GetKeyDown(KeyCode.F))
             {
-                GameObject item = GameObject.Instantiate(m_Bullet);
-                item.transform.position = transform.position;
-               
-                Bullet bullet = item.GetComponent<Bullet>();
-                bullet.m_Speed = transform.forward / 2f;
+                Attack();
             }
+        }
+
+        private void Attack()
+        {
+            GameObject item = GameObject.Instantiate(m_Bullet);
+            item.transform.position = transform.position;
+
+            Bullet bullet = item.GetComponent<Bullet>();
+            bullet.m_Speed = transform.forward / 2f;
         }
     }
 }

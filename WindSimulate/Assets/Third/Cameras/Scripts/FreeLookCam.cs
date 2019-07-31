@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
+using CoreFramework;
 
 namespace UnityStandardAssets.Cameras
 {
@@ -28,6 +29,9 @@ namespace UnityStandardAssets.Cameras
 		private Quaternion m_PivotTargetRot;
 		private Quaternion m_TransformTargetRot;
 
+        private float m_MoveX;
+        private float m_MoveY;
+
         protected override void Awake()
         {
             base.Awake();
@@ -38,6 +42,12 @@ namespace UnityStandardAssets.Cameras
 
 	        m_PivotTargetRot = m_Pivot.transform.localRotation;
 			m_TransformTargetRot = transform.localRotation;
+
+            JoystickPanel.Instance.SetCameraAction((x, y) =>
+            {
+                m_MoveX = x;
+                m_MoveY = y;
+            }, 0);
         }
 
 
@@ -73,8 +83,10 @@ namespace UnityStandardAssets.Cameras
 			return;
 
             // Read the user input
-            var x = CrossPlatformInputManager.GetAxis("Mouse X");
-            var y = CrossPlatformInputManager.GetAxis("Mouse Y");
+            //var x = CrossPlatformInputManager.GetAxis("Mouse X");
+            //var y = CrossPlatformInputManager.GetAxis("Mouse Y");
+            float x = m_MoveX;
+            float y = m_MoveY;
 
             // Adjust the look angle by an amount proportional to the turn speed and horizontal input.
             m_LookAngle += x*m_TurnSpeed;
