@@ -12,6 +12,7 @@ public class WorldManager : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 60;
+        Create();
     }
 
     private void OnGUI()
@@ -29,7 +30,7 @@ public class WorldManager : MonoBehaviour
 
     private void Create()
     {
-        IndirectDrawBuffer newBuffer = new IndirectDrawBuffer(m_CopyItem, 10, 1023);
+        IndirectDrawBuffer newBuffer = new IndirectDrawBuffer(m_CopyItem, 20, 1023);
         m_IndirectDrawList.Add(newBuffer);
     }
 
