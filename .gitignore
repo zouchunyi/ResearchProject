@@ -10,7 +10,6 @@ Temp
 *.user
 *.tlog
 *.cache
-Debug
 Release
 *.pdb
 *.obj
@@ -21,3 +20,4 @@ Release
 StreamingAssets
 .vs
 Logs
+obj
